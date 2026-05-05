@@ -1,7 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
+app.json.sort_keys = False
 CORS(app)  # This will enable CORS for all routes
 
 POSTS = [
@@ -13,6 +14,31 @@ POSTS = [
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     return jsonify(POSTS)
+
+
+def get_next_id(blog_posts: list[dict]) -> int:
+    """
+    Generate a new ID for the next blog post (maximum existing ID + 1).
+
+    Args:
+        blog_posts: List with blog posts.
+
+    Returns:
+        ID for the next blog post.
+    """
+    ids = [blog_post['id'] for blog_post in blog_posts]
+    return max(ids, default=0) + 1
+
+
+@app.route('/api/posts', methods=['POST'])
+def add_post():
+    data = request.get_json()
+    title = data.get('title')
+    content = data.get('content')
+    new_id = get_next_id(POSTS)
+    new_post = {"id": new_id, "title": title, "content": content}
+    POSTS.append(new_post)
+    return jsonify(new_post), 201
 
 
 if __name__ == '__main__':
