@@ -1,3 +1,4 @@
+"""RESTful API for reading, updating, adding and deleting blog posts."""
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 

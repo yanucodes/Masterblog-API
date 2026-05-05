@@ -1,3 +1,4 @@
+"""Frontend application for reading, updating, adding and deleting blog posts."""
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -5,6 +6,12 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def home():
+    """
+    Render the blog homepage.
+
+    Returns:
+        Rendered index.html template.
+    """
     return render_template("index.html")
 
 
