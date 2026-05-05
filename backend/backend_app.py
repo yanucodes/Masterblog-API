@@ -10,6 +10,8 @@ POSTS = [
     {"id": 2, "title": "Second post", "content": "This is the second post."},
 ]
 
+REQUIRED_POST_FIELDS = ["title", "content"]
+
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
@@ -33,10 +35,19 @@ def get_next_id(blog_posts: list[dict]) -> int:
 @app.route('/api/posts', methods=['POST'])
 def add_post():
     data = request.get_json()
-    title = data.get('title')
-    content = data.get('content')
-    new_id = get_next_id(POSTS)
-    new_post = {"id": new_id, "title": title, "content": content}
+
+    missing_fields = []
+    for field in REQUIRED_POST_FIELDS:
+        if not data.get(field):
+            missing_fields.append(field)
+
+    if missing_fields:
+        return jsonify({"error": f"Missing field(s): {', '.join(missing_fields)}"}), 400
+
+    new_post = {"id": get_next_id(POSTS)}
+    for field in REQUIRED_POST_FIELDS:
+        new_post[field] = data[field]
+
     POSTS.append(new_post)
     return jsonify(new_post), 201
 
