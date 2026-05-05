@@ -18,6 +18,22 @@ def get_posts():
     return jsonify(POSTS)
 
 
+@app.route('/api/posts/<int:post_id>', methods=['GET'])
+def get_post(post_id):
+    """
+    Get the post with a given ID.
+
+    Returns:
+        JSON object and a status code. The blog post with status code 200
+        in case of success, error message with status code 404 if the post
+        with a given ID was not found.
+    """
+    for post in POSTS:
+        if post["id"] == post_id:
+            return jsonify(post), 200
+    return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
+
+
 def get_next_id(blog_posts: list[dict]) -> int:
     """
     Generate a new ID for the next blog post (maximum existing ID + 1).
