@@ -45,6 +45,25 @@ def get_post(post_id):
     return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
 
 
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    """
+    Search posts by query string. A post matches if any provided field contains
+    the corresponding value (case-insensitive substring match).
+
+    Returns:
+        JSON object with all posts matching the query.
+    """
+    search_query = request.args
+    query_keys = [key for key in REQUIRED_POST_FIELDS if search_query.get(key)]
+    filtered_posts = posts[:]
+    if query_keys:
+        filtered_posts = [post for post in posts if
+                          any(search_query[key].lower() in post[key].lower()
+                              for key in query_keys)]
+    return jsonify(filtered_posts)
+
+
 def get_next_id(blog_posts: list[dict]) -> int:
     """
     Generate a new ID for the next blog post (maximum existing ID + 1).
