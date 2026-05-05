@@ -34,7 +34,7 @@ def get_next_id(blog_posts: list[dict]) -> int:
 
 @app.route('/api/posts', methods=['POST'])
 def add_post():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
     missing_fields = []
     for field in REQUIRED_POST_FIELDS:
