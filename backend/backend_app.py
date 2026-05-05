@@ -15,6 +15,12 @@ REQUIRED_POST_FIELDS = ["title", "content"]
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    """
+    Get all posts in the blog.
+
+    Returns:
+        JSON object with all posts.
+    """
     return jsonify(POSTS)
 
 
