@@ -34,6 +34,18 @@ def get_next_id(blog_posts: list[dict]) -> int:
 
 @app.route('/api/posts', methods=['POST'])
 def add_post():
+    """
+    Add a new blog post.
+
+    Request Body (JSON):
+        title (str): Title of the new post.
+        content (str): Content of the new post.
+
+    Returns:
+        JSON object and a status code. The new blog post with status code
+        201 in case of success, error message with status code 400 in case
+        of failure.
+    """
     data = request.get_json(silent=True) or {}
 
     missing_fields = []
