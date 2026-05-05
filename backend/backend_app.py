@@ -1,4 +1,6 @@
 """RESTful API for reading, updating, adding and deleting blog posts."""
+import copy
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -6,10 +8,12 @@ app = Flask(__name__)
 app.json.sort_keys = False
 CORS(app)  # This will enable CORS for all routes
 
-POSTS = [
+INITIAL_POSTS = [
     {"id": 1, "title": "First post", "content": "This is the first post."},
     {"id": 2, "title": "Second post", "content": "This is the second post."},
 ]
+
+posts = copy.deepcopy(INITIAL_POSTS)
 
 REQUIRED_POST_FIELDS = ["title", "content"]
 
@@ -22,7 +26,7 @@ def get_posts():
     Returns:
         JSON object with all posts.
     """
-    return jsonify(POSTS)
+    return jsonify(posts)
 
 
 @app.route('/api/posts/<int:post_id>', methods=['GET'])
@@ -35,7 +39,7 @@ def get_post(post_id):
         in case of success, error message with status code 404 if the post
         with a given ID was not found.
     """
-    for post in POSTS:
+    for post in posts:
         if post["id"] == post_id:
             return jsonify(post), 200
     return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
@@ -79,11 +83,11 @@ def add_post():
     if missing_fields:
         return jsonify({"error": f"Missing field(s): {', '.join(missing_fields)}"}), 400
 
-    new_post = {"id": get_next_id(POSTS)}
+    new_post = {"id": get_next_id(posts)}
     for field in REQUIRED_POST_FIELDS:
         new_post[field] = data[field]
 
-    POSTS.append(new_post)
+    posts.append(new_post)
     return jsonify(new_post), 201
 
 
@@ -100,9 +104,9 @@ def delete_post(post_id):
         200 or error message with a status code 404 if the post with a given
         ID was not found.
     """
-    for post in POSTS:
+    for post in posts:
         if post["id"] == post_id:
-            POSTS.remove(post)
+            posts.remove(post)
             return jsonify({"message": f"Post with id {post_id} has been deleted "
                                        f"successfully."}), 200
     return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
@@ -124,7 +128,7 @@ def update_post(post_id):
     """
     data = request.get_json(silent=True) or {}
 
-    for post in POSTS:
+    for post in posts:
         if post["id"] == post_id:
             for field in REQUIRED_POST_FIELDS:
                 if data.get(field):
