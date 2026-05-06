@@ -64,6 +64,24 @@ def search_posts():
     return jsonify(filtered_posts)
 
 
+def sort_posts(posts: list, field: str = 'title', descending: bool = False) \
+        -> list:
+    """
+    Sort list of posts by a specified field.
+
+    Args:
+        posts: List with blog posts.
+        field: Field used for sorting. Defaults to 'title'.
+        descending: If True, sort in descending order. Defaults to False.
+
+    Returns:
+        Sorted list of blog posts.
+    """
+    if field not in REQUIRED_POST_FIELDS:
+        return posts
+    return sorted(posts, key=lambda post: post[field], reverse=descending)
+
+
 def get_next_id(blog_posts: list[dict]) -> int:
     """
     Generate a new ID for the next blog post (maximum existing ID + 1).
