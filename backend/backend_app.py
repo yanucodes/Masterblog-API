@@ -78,13 +78,13 @@ def search_posts():
     return jsonify(filtered_posts)
 
 
-def sort_posts(posts: list, field: str = 'title', descending: bool = False) \
-        -> list:
+def sort_posts(input_posts: list, field: str = 'title',
+               descending: bool = False) -> list:
     """
     Sort list of posts by a specified field.
 
     Args:
-        posts: List with blog posts.
+        input_posts: List with blog posts.
         field: Field used for sorting. Defaults to 'title'.
         descending: If True, sort in descending order. Defaults to False.
 
@@ -92,8 +92,9 @@ def sort_posts(posts: list, field: str = 'title', descending: bool = False) \
         Sorted list of blog posts.
     """
     if field not in REQUIRED_POST_FIELDS:
-        return posts
-    return sorted(posts, key=lambda post: post[field], reverse=descending)
+        return input_posts
+    return sorted(input_posts, key=lambda post: post[field],
+                  reverse=descending)
 
 
 def get_next_id(blog_posts: list[dict]) -> int:
@@ -132,7 +133,8 @@ def add_post():
             missing_fields.append(field)
 
     if missing_fields:
-        return jsonify({"error": f"Missing field(s): {', '.join(missing_fields)}"}), 400
+        error_info = {"error": f"Missing field(s): {', '.join(missing_fields)}"}
+        return jsonify(error_info), 400
 
     new_post = {"id": get_next_id(posts)}
     for field in REQUIRED_POST_FIELDS:
@@ -158,8 +160,8 @@ def delete_post(post_id):
     for post in posts:
         if post["id"] == post_id:
             posts.remove(post)
-            return jsonify({"message": f"Post with id {post_id} has been deleted "
-                                       f"successfully."}), 200
+            return jsonify({"message": f"Post with id {post_id} has been "
+                                       f"deleted successfully."}), 200
     return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
 
 
