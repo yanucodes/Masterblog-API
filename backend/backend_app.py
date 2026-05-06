@@ -138,7 +138,7 @@ def add_post():
 
     new_post = {"id": get_next_id(posts)}
     for field in REQUIRED_POST_FIELDS:
-        new_post[field] = data[field]
+        new_post[field] = data[field].strip()
 
     posts.append(new_post)
     return jsonify(new_post), 201
@@ -185,7 +185,7 @@ def update_post(post_id):
         if post["id"] == post_id:
             for field in REQUIRED_POST_FIELDS:
                 if data.get(field):
-                    post[field] = data[field]
+                    post[field] = data[field].strip()
             return jsonify(post), 200
     return jsonify({"error": f"Post with id {post_id} does not exist."}), 404
 
