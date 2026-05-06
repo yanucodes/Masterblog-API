@@ -21,12 +21,26 @@ REQUIRED_POST_FIELDS = ["title", "content"]
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     """
-    Get all posts in the blog.
+    Get all posts in the blog. Optionally sorted according to parameters in
+    the request.
+
+    Query Params:
+      sort: Field to sort by. One of the required post fields.
+      direction: 'asc' or 'desc'. Defaults to 'asc'.
 
     Returns:
         JSON object with all posts.
     """
-    return jsonify(posts)
+    sort = request.args.get('sort')
+    if sort and sort not in REQUIRED_POST_FIELDS:
+        return jsonify({"error": f"Invalid sort field: {sort}"}), 400
+
+    direction = request.args.get('direction')
+    if direction and direction.lower() not in ('asc', 'desc'):
+        return jsonify({"error": f"Invalid direction: {direction}"}), 400
+    descending = (direction or '').lower() == 'desc'
+
+    return jsonify(sort_posts(posts, sort, descending=descending))
 
 
 @app.route('/api/posts/<int:post_id>', methods=['GET'])
